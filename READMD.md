@@ -4,6 +4,10 @@
 
 Currently an experiment in statistical text generation, the intent is to utilize this method for evaluating frequent phrases and deocding into more streamlined documentation.
 
+## Usage
+
+`python markov2.py`
+
 ## Data
 
 Current Data are some sample / reference FISMA materials, a more comprehensive corpus needs to be developed and likely be a 'live download'
