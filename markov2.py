@@ -4,7 +4,7 @@
 import json
 import random
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, exists
 
 from nltk import word_tokenize
 from nltk.tokenize import sent_tokenize
@@ -24,50 +24,68 @@ class MarkovBot(object):
     corpus = None
     everything = None
 
+    def _check_defaults(self):
+        """ Helper Function to ensure internal dictionaries are setup correctly """
+        try:
+            self.everything['input']
+        except:
+            self.everything = {}
+            self.everything['input'] = {}
+
+        try:
+            self.corpus = self.everything['corpus']
+        except:
+            self.everything['corpus'] = {}
+            self.corpus = {} 
+
+        try:
+            self.CHAIN_LENGTH = everything['chain_len']
+        except:
+            self.everything['chain_len'] = self.CHAIN_LENGTH
+
     def __init__(self, *args, **kwargs):
+        """ Setup initial class, and ideally load data from pre-built file """
         super(MarkovBot, self).__init__(*args, **kwargs)
-        self.load_data()
+        try:
+            self.load_data()
+        except:
+            self._check_defaults()
 
     def load_data(self):
+        """ Loads data (hopefully) from baseline file """
         print "Loading Data:", self.my_data_file
 
         with open(self.my_data_file, "r") as file_name:
             self.everything = json.loads( file_name.read() )
 
-        try:
-            self.corpus = self.everything['corpus']
-        except:
-            self.corpus = {}
-
-        try:
-            self.everything['input']
-        except:
-            self.everything['input'] = {}
-
-        try:
-            self.CHAIN_LENGTH = everything['chain_len']
-        except:
-            everything['chain_len'] = self.CHAIN_LENGTH
+        ## still have to check here vs. __init__() in case file is corrupt
+        self._check_defaults()
 
     def save_data(self):
+        """ Saves data (hopefully) to baseline file """
         print "Saving Data:", self.my_data_file
 
         with open("corpus_data.json", "w") as file_name:
             json.dump( { 'input': self.everything['input'], 'corpus': self.corpus } , file_name)
 
     def add_text(self, my_dir = None):
+        """ Adds all text / files from raw_file directory - maybe call train() next """
         if not my_dir:
             my_dir = self.my_data_dir
        
+        ## still have to check here vs. __init__() in case file is corrupt
+        self._check_defaults()
+
         print "Extracting text from:", my_dir
 
         file_list = [f for f in listdir(my_dir) if isfile(join(my_dir, f))]
 
         for f in file_list: # Will overwrite text for any existing files
             print "\tProcessing file:", f
-            self.everythign['input'][f] = textract.process( join(my_dir, f), encoding="acsii" )
+            self.everything['input'][f] = textract.process( join(my_dir, f), encoding="ascii" )
 
     def _make_chains(self, words, chain_len = None):
+        """ Helper function to return chain pairs """
         if not chain_len:
             chain_len = self.CHAIN_LENGTH
 
@@ -78,6 +96,7 @@ class MarkovBot(object):
             yield words[i:i + chain_len + 1]
 
     def train(self, chain_len = None):
+        """ Trains the markov data structure by creating chains of desired length """
         if not chain_len:
             chain_len = self.CHAIN_LENGTH
 
@@ -99,12 +118,14 @@ class MarkovBot(object):
                         self.corpus[k] = [v]
 
     def _contains(self, text, chars):
+        """ Helper function - e.g. for checking if any character in chars appears in text """
         for c in chars:
             if c in text:
                 return True
         return False
 
     def say_something(self, key_phrase = None, use_stops = True, max_iterations = None):
+        """ Primary driver function for spouting generated prose """
         if not key_phrase:
             key_phrase = random.choice( self.corpus.keys() )
         if not max_iterations:
@@ -137,5 +158,10 @@ class MarkovBot(object):
 
 if __name__ == "__main__":
     bot = MarkovBot()
+
+    if not exists( bot.my_data_file ):
+        bot.add_text()
+        bot.train()
+        bot.save_data()
 
     print bot.say_something()
