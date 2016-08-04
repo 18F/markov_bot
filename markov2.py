@@ -36,7 +36,7 @@ class MarkovBot(object):
             self.corpus = self.everything['corpus']
         except:
             self.everything['corpus'] = {}
-            self.corpus = {} 
+            self.corpus = self.everything['corpus']
 
         try:
             self.CHAIN_LENGTH = everything['chain_len']
@@ -65,7 +65,7 @@ class MarkovBot(object):
         """ Saves data (hopefully) to baseline file """
         print "Saving Data:", self.my_data_file
 
-        with open("corpus_data.json", "w") as file_name:
+        with open(self.my_data_file, "w") as file_name:
             json.dump( { 'input': self.everything['input'], 'corpus': self.corpus } , file_name)
 
     def add_text(self, my_dir = None):
@@ -102,7 +102,8 @@ class MarkovBot(object):
 
         self.CHAIN_LEN = chain_len
 
-        self.corpus = {}
+        self.everything['corpus'] = {}
+        self.corpus = self.everything['corpus']
     
         for f in self.everything['input']:
             for line in sent_tokenize( self.everything['input'][f] ):
