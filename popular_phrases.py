@@ -80,7 +80,11 @@ class TextBucket(object):
 
         for f in file_list: # Will overwrite text for any existing files
             print "\tProcessing file:", f
-            self.everything['input'][f] = textract.process( join(my_dir, f), encoding="ascii" )
+            txt = textract.process( join(my_dir, f), encoding="utf-8" )
+            txt = txt.replace("\xa0", " ")
+            txt = txt.decode('ascii', errors="ignore")
+            txt = txt.encode("ascii") #, errors="ignore")
+            self.everything['input'][f] = txt
 
     def _make_chains(self, words, chain_len):
         """ Helper function to return chain pairs """
@@ -92,8 +96,6 @@ class TextBucket(object):
             yield words[i:i + chain_len + 1]
 
     def make_phrases(self, start = 1, end = None):
-        ERRoR_TRIGGER = [u'301', u'.', None]
-
         if not end: end = start + 1
 
         for chain_len in range(start, end): # +1 because of the way range works
@@ -106,10 +108,9 @@ class TextBucket(object):
                     for chain in self._make_chains(words, chain_len):
 
                         try:
-                            #print "ERROR.0:", chain
+#                           print "ERROR.0:", chain
                             chain = chain[:-1] # drop last item in chain as it's "value" for markov
-                            chain = [c for c in chain if c is not None]
-                            ## [chain.remove(None) for c in chain] # quick hack as None is breaking join
+                            chain = [c for c in chain if c is not None] # quick clean as None is breaking join
                         except: 
                             print "ERROR.1:", chain
 #                           sys.exit(-1)
@@ -126,6 +127,7 @@ class TextBucket(object):
 
     def count_phrases(self, num):
         end = num + 1
+        #start = num
         start = 1
 
         self.everything['phrases'] = {}
@@ -150,12 +152,25 @@ if __name__ == "__main__":
         print "\t", k, "=> #", len(bot.everything['input'][k])
     print
 
-#   bot.make_phrases()
+    try:
+        num = int(sys.argv[1])
+    except:
+        num = 10
 
-    bot.count_phrases(24)
-    print "Max Chain:", bot.MAX_CHAIN_LEN
+    bot.count_phrases(num)
+#   print "Max Chain:", bot.MAX_CHAIN_LEN
 
-#    for k in bot.phrases:
-#        print "\t", k, "=>", bot.phrases[k].most_common(1)
-    for i in range( bot.MAX_CHAIN_LEN, 1, -1):
-        print "\t", i, "=>", bot.phrases[i].most_common(1)
+    for i in bot.phrases:
+#   for i in range( bot.MAX_CHAIN_LEN, 1, -1):
+        common_num = 1
+
+        while common_num:
+            common = bot.phrases[i].most_common(common_num)
+            if len(common[-1][0]) >= i:
+                print "\t", i, "=>", common[-1]
+                common_num = None
+            else:
+                common_num += 1
+                if common_num > i*2: # Random Stop Gap to prevent runaway
+                    print "No Common Found!"
+                    common_num = None
