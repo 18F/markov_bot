@@ -8,7 +8,7 @@ from os.path import isfile, join, exists
 
 from nltk import word_tokenize
 from nltk.tokenize import sent_tokenize
-# Other alternatives are nltk.tokenize.punkt 
+# Other alternatives are nltk.tokenize.punkt
 #   sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
 #   sent_detector.tokenize(text.strip(), realign_boundaries=False)))
 
@@ -72,7 +72,7 @@ class MarkovBot(object):
         """ Adds all text / files from raw_file directory - maybe call train() next """
         if not my_dir:
             my_dir = self.my_data_dir
-       
+
         ## still have to check here vs. __init__() in case file is corrupt
         self._check_defaults()
 
@@ -104,7 +104,7 @@ class MarkovBot(object):
 
         self.everything['corpus'] = {}
         self.corpus = self.everything['corpus']
-    
+
         for f in self.everything['input']:
             for line in sent_tokenize( self.everything['input'][f] ):
                 words = word_tokenize(line)
@@ -112,7 +112,7 @@ class MarkovBot(object):
                 for chain in self._make_chains(words):
                     k = " ".join( chain[:-1] ) # key is everything but last word
                     v = chain[-1] # value is last word
-                    
+
                     try:
                         self.corpus[k].append(v)
                     except:
@@ -142,7 +142,7 @@ class MarkovBot(object):
             utterances.append( random.choice(choices) )
 
             if not utterances[-1]: # Remove if it's the stop =>  None
-                utterances.pop() 
+                utterances.pop()
                 choices = None
             elif len(utterances) > max_iterations:
                 choices = None
