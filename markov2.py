@@ -135,7 +135,7 @@ class MarkovBot(object):
         utterances = key_phrase.split(" ")
         chain_len = len(utterances)
 
-        print "\nStarting with:", key_phrase
+        ## print "\nStarting with:", key_phrase
         choices = self.corpus[key_phrase]
 
         while choices:
@@ -154,7 +154,7 @@ class MarkovBot(object):
                 key_phrase = " ".join( utterances[-chain_len:] )
                 choices = self.corpus[ key_phrase ]
 
-        return " ".join(utterances)
+        return (key_phrase, " ".join(utterances) )
 
 
 if __name__ == "__main__":
@@ -165,4 +165,6 @@ if __name__ == "__main__":
         bot.train()
         bot.save_data()
 
-    print bot.say_something()
+    k, v = bot.say_something()
+    print "Started with: ", k
+    print "   Generated: ", v
