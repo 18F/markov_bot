@@ -151,8 +151,8 @@ class MarkovBot(object):
                 utterances.pop()
                 choices = None
             else:
-                key_phrase = " ".join( utterances[-chain_len:] )
-                choices = self.corpus[ key_phrase ]
+                next_phrase = " ".join( utterances[-chain_len:] )
+                choices = self.corpus[ next_phrase ]
 
         return (key_phrase, " ".join(utterances) )
 
