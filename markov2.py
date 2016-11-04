@@ -68,7 +68,7 @@ class MarkovBot(object):
         with open(self.my_data_file, "w") as file_name:
             json.dump( { 'input': self.everything['input'], 'corpus': self.corpus } , file_name)
 
-    def add_text(self, my_dir = None):
+    def add_files(self, my_dir = None):
         """ Adds all text / files from raw_file directory - maybe call train() next """
         if not my_dir:
             my_dir = self.my_data_dir
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     bot = MarkovBot()
 
     if not exists( bot.my_data_file ):
-        bot.add_text()
+        bot.add_files()
         bot.train()
         bot.save_data()
 
