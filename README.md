@@ -24,3 +24,8 @@ Initially there may be two “functional” thoughts, beyond just generating gib
    a. some “statistical analysis” might be helpful - e.g. sentences / word phrases that repeat as well as
    
    b. “generative analysis” - e.g. maybe if a markov bot ran many many many times with [in|de]creasing chain lengths it might be possible to determine what “key phrases” must remain but could be removed (i.e. a sentence that’s in there many times would show up more and would signify as important but also with redundancy)
+
+## Notes:
+
+After installing `nltk` you will likely have to use `nltk.download()` in a python REPL.
+    - `book` seems to work sufficiently well for this, though might be overkill.
