@@ -166,5 +166,5 @@ if __name__ == "__main__":
         bot.save_data()
 
     k, v = bot.say_something()
-    print "Started with: ", k
-    print "   Generated: ", v
+    print "Started with:", k
+    print "   Generated:", v
