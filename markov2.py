@@ -89,7 +89,8 @@ class MarkovBot(object):
         if not chain_len:
             chain_len = self.CHAIN_LENGTH
 
-        if len(words) <= chain_len: # <= because we always want 1 stop "word" i.e. None at minimum
+        # <= because we always want 1 stop "word" i.e. None at minimum
+        if len(words) <= chain_len:
             words.extend( [None] * (1 + chain_len - len(words)) )
 
         for i in range( len(words) - chain_len ):
