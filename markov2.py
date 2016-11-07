@@ -125,12 +125,15 @@ class MarkovBot(object):
                 return True
         return False
 
-    def say_something(self, key_phrase = None, use_stops = True, max_iterations = None):
+    def say_something(self, key_phrase = None, use_stops = True,
+                                       max_iterations = None, max_phrase_len = None):
         """ Primary driver function for spouting generated prose """
         if not key_phrase:
             key_phrase = random.choice( self.corpus.keys() )
         if not max_iterations:
             max_iterations = 50
+        if not max_phrase_len:
+            max_phrase_len = 140
 
         utterances = key_phrase.split(" ")
         chain_len = len(utterances)
@@ -146,6 +149,10 @@ class MarkovBot(object):
                 choices = None
             elif len(utterances) > max_iterations:
                 choices = None
+            elif len( " ".join(utterances) ) > max_phrase_len:
+                choices = None
+            ### BUG: if it's not a stop punctuation we should append it to previous word
+            ### so it prints prettier and remove it from utterances list (but not "next phrase"
             elif use_stops and self._contains(utterances[-1], self.stop_punctuation):
                 utterances[-2] += utterances[-1] # Append ending punctuation to last word (removes space)
                 utterances.pop()
